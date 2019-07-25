@@ -2,6 +2,8 @@ ConfigManager is a library for Bukkit plugins to simplify the use of multiple co
 This code was originally created by **foodyling** and the original post can be found [here](https://bukkit.org/threads/configuration-manager.157660/). 
 I updated it for use in 1.12+.
 
+[![Build Status](https://travis-ci.org/mattboy9921/ConfigManager.svg?branch=master)](https://travis-ci.org/mattboy9921/ConfigManager)
+
 **To add this library to your plugin with Maven**
 
 Add the following to your `pom.xml`:
