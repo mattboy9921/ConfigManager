@@ -1,13 +1,12 @@
 package net.mattlabs.configmanager;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -214,6 +213,43 @@ public class ConfigManager {
         for (String configName : configurations.keySet()) {
             reloadConfig(configName);
         }
+    }
+
+    /**
+     * Updates a config
+     */
+    public boolean updateConfig(String configName) {
+        if (configurations.containsKey(configName)) {
+            Configuration config = configurations.get(configName);
+            try {
+                if (config.getFile().exists()) {
+                    boolean changesMade = false;
+
+                    // Load the new configuration from the resources folder
+                    YamlConfiguration newConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(caller.getResource(configName)));
+
+                    // Load the existing configuration from the plugin folder
+                    YamlConfiguration yamlConfiguration = new YamlConfiguration();
+                    yamlConfiguration.load(config.getFile());
+
+                    // Transfer values from old to new configuration
+                    for (String string : newConfiguration.getKeys(true)) {
+                        if (!yamlConfiguration.getKeys(true).contains(string))
+                            config.getConfig().set(string, yamlConfiguration.get(string));
+                    }
+
+                    // Save the new configuration
+                    saveConfig(configName);
+                    reloadConfig(configName);
+                    return true;
+                }
+            }
+            catch (IOException | InvalidConfigurationException e) {
+                caller.getLogger().severe("Could not update configuration:" + configName);
+                return false;
+            }
+        }
+        return false;
     }
 
     /**
